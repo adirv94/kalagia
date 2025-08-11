@@ -431,32 +431,36 @@
                 timestamp: new Date().toLocaleString('he-IL')
             };
 
-            // Create email body
-            const emailBody = `
-בקשה לוגיסטית חדשה התקבלה!
+                     // Create email body - format for better compatibility
+            const emailBody = [
+                'בקשה לוגיסטית חדשה התקבלה!',
+                '',
+                '===== פרטי המבקש =====',
+                'שם: ' + formData.name,
+                'יחידה: ' + formData.unit,  
+                'טלפון: ' + formData.phone,
+                '',
+                '===== פרטי הבקשה =====',
+                'סוג: ' + formData.requestType,
+                'דחיפות: ' + formData.priority,
+                'תאריך יעד: ' + formData.deadline,
+                '',
+                '===== תיאור הבקשה =====',
+                formData.description,
+                '',
+                '===== זמן הגשה =====',
+                formData.timestamp
+            ].join('\n');
 
-פרטי המבקש:
-שם: ${formData.name}
-יחידה: ${formData.unit}
-טלפון: ${formData.phone}
-
-פרטי הבקשה:
-סוג: ${formData.requestType}
-דחיפות: ${formData.priority}
-תאריך יעד: ${formData.deadline}
-
-תיאור:
-${formData.description}
-
-זמן הגשה: ${formData.timestamp}
-            `.trim();
-
-            // Create mailto link
-            const subject = `בקשה לוגיסטית ${formData.priority === 'דחוף' ? '🔴 דחופה' : ''} - ${formData.unit} - ${formData.name}`;
-            const mailtoLink = `mailto:your-email@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+            // Create mailto link with YOUR email - CHANGE THIS!
+            const subject = 'בקשה לוגיסטית - ' + formData.unit + ' - ' + formData.name;
+            const yourEmail = 'adirv06@gmail.com'; // <<<< החלף למייל שלך כאן!
+            
+            // Build the mailto link
+            const mailtoLink = 'mailto:' + yourEmail + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(emailBody);
             
             // Open email client
-            window.location.href = `mailto:adirv06@gmail.com`
+            window.location.href = mailtoLink;
 
             // Show success message
             const successMsg = document.getElementById('successMessage');
