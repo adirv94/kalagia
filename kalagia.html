@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת בקשות לוגיסטיות</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .animated-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .animated-bg::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -150px;
+            animation: float 15s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(30px) rotate(240deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo svg {
+            width: 50px;
+            height: 50px;
+            fill: white;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: #b0b0b0;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .priority-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .priority-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .priority-option input[type="radio"] {
+            display: none;
+        }
+
+        .priority-label {
+            display: block;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .priority-option input[type="radio"]:checked + .priority-label {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .priority-label:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, #84fab0, #8fd3f4);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .field-icon {
+            position: absolute;
+            left: 15px;
+            top: 42px;
+            color: #999;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+
+        .form-group:focus-within .field-icon {
+            color: #667eea;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #f5f7fa, #e9ecef);
+            border-right: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.8s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .priority-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                </svg>
+            </div>
+            <h1>מערכת בקשות לוגיסטיות קקצ יולי אוגוסט</h1>
+            <p class="subtitle">הגש בקשה לטיפול בפער לוגיסטי</p>
+        </div>
+
+        <div class="info-box">
+            <p>ברוכים הבאים למערכת הבקשות הלוגיסטיות של קקצ יולי אוגוסט. מלאו את הטופס כדי לדווח על פער לוגיסטי או להגיש בקשה לציוד. הבקשה תועבר לטיפול מיידי.</p>
+        </div>
+
+        <form id="logisticsForm">
+            <div class="form-group">
+                <label for="name">שם מלא</label>
+                <input type="text" id="name" name="name" required placeholder="הכנס את שמך המלא">
+            </div>
+
+            <div class="form-group">
+                <label for="unit"> צוות </label>
+                <input type="text" id="unit" name="unit" required placeholder="לדוגמה: פלוגה א'">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">טלפון ליצירת קשר</label>
+                <input type="tel" id="phone" name="phone" required placeholder="050-1234567">
+            </div>
+
+            <div class="form-group">
+                <label for="requestType">סוג הבקשה</label>
+                <select id="requestType" name="requestType" required>
+                    <option value="">בחר סוג בקשה</option>
+                    <option value="equipment">ציוד חסר</option>
+                    <option value="maintenance">תחזוקה ותיקונים</option>
+                    <option value="supplies">אספקה שוטפת</option>
+                    <option value="food">מזון ומים</option>
+                    <option value="other">אחר</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>דחיפות הבקשה</label>
+                <div class="priority-group">
+                    <div class="priority-option">
+                        <input type="radio" id="low" name="priority" value="נמוכה" required>
+                        <label for="low" class="priority-label">נמוכה</label>
+                    </div>
+                    <div class="priority-option">
+                        <input type="radio" id="medium" name="priority" value="בינונית" required>
+                        <label for="medium" class="priority-label">בינונית</label>
+                    </div>
+                    <div class="priority-option">
+                        <input type="radio" id="high" name="priority" value="גבוהה" required>
+                        <label for="high" class="priority-label">גבוהה</label>
+                    </div>
+                    <div class="priority-option">
+                        <input type="radio" id="urgent" name="priority" value="דחוף" required>
+                        <label for="urgent" class="priority-label">דחוף!</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">תיאור הבקשה</label>
+                <textarea id="description" name="description" required placeholder="פרט את הבקשה שלך - מה חסר, כמה יחידות, למה צריך וכו'"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="deadline">תאריך יעד לטיפול</label>
+                <input type="date" id="deadline" name="deadline">
+            </div>
+
+            <button type="submit" class="submit-btn">שלח בקשה</button>
+        </form>
+
+        <div id="successMessage" class="success-message">
+            ✓ הבקשה נשלחה בהצלחה! נטפל בה בהקדם האפשרי.
+        </div>
+    </div>
+
+    <script>
+        // Set minimum date to today
+        document.getElementById('deadline').min = new Date().toISOString().split('T')[0];
+
+        document.getElementById('logisticsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = {
+                name: document.getElementById('name').value,
+                unit: document.getElementById('unit').value,
+                phone: document.getElementById('phone').value,
+                requestType: document.getElementById('requestType').value,
+                priority: document.querySelector('input[name="priority"]:checked').value,
+                description: document.getElementById('description').value,
+                deadline: document.getElementById('deadline').value || 'לא צוין',
+                timestamp: new Date().toLocaleString('he-IL')
+            };
+
+            // Create email body
+            const emailBody = `
+בקשה לוגיסטית חדשה התקבלה!
+
+פרטי המבקש:
+שם: ${formData.name}
+יחידה: ${formData.unit}
+טלפון: ${formData.phone}
+
+פרטי הבקשה:
+סוג: ${formData.requestType}
+דחיפות: ${formData.priority}
+תאריך יעד: ${formData.deadline}
+
+תיאור:
+${formData.description}
+
+זמן הגשה: ${formData.timestamp}
+            `.trim();
+
+            // Create mailto link
+            const subject = `בקשה לוגיסטית ${formData.priority === 'דחוף' ? '🔴 דחופה' : ''} - ${formData.unit} - ${formData.name}`;
+            const mailtoLink = `mailto:your-email@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('show');
+            
+            // Scroll to success message
+            successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Reset form after 3 seconds
+            setTimeout(() => {
+                this.reset();
+                successMsg.classList.remove('show');
+            }, 3000);
+        });
+
+        // Add hover effects to inputs
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
